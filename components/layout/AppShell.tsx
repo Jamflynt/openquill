@@ -140,7 +140,7 @@ export default function AppShell({ children, user }: AppShellProps) {
             className="underline"
             style={{ color: 'var(--quill-green)' }}
           >
-            I build this solo — support development on Ko-fi
+            OpenQuill is free — support development on Ko-fi
           </a>
         </div>
       )}

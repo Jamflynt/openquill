@@ -114,7 +114,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
     if (!res.ok) {
       if (res.status === 429) {
         const resetAt = new Date(Date.now() + 60 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        setError(`5 free imports per hour — rate limit reached. Resets around ${resetAt}. Join the Pro waitlist for unlimited imports.`)
+        setError(`5 imports per hour — limit reached. Each import uses AI that costs real money, so this limit keeps OpenQuill free for everyone. Resets around ${resetAt}.`)
       } else {
         setError(data.error ?? "Couldn't extract transactions. Make sure you pasted the full statement text (not a screenshot) from your bank's website or a PDF. Then try again.")
       }
@@ -283,7 +283,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
         {process.env.NEXT_PUBLIC_KOFI_URL && (
           <p className="text-xs mt-4" style={{ color: 'var(--quill-muted)' }}>
             OpenQuill organized {commitCount} transaction{commitCount !== 1 ? 's' : ''}.{' '}
-            If it&apos;s been useful,{' '}
+            That import used an AI call that costs real money to process.{' '}
             <a
               href={process.env.NEXT_PUBLIC_KOFI_URL}
               target="_blank"
@@ -291,7 +291,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               className="underline"
               style={{ color: 'var(--quill-green)' }}
             >
-              support development on Ko-fi →
+              Help keep OpenQuill free →
             </a>
           </p>
         )}
@@ -648,13 +648,15 @@ export default function StatementImportView({ accounts: initialAccounts }: State
             <p role="alert" className="text-sm" style={{ color: 'var(--quill-red)' }}>
               {error}
             </p>
-            {error.includes('free imports per hour') && (
+            {error.includes('imports per hour') && process.env.NEXT_PUBLIC_KOFI_URL && (
               <a
-                href="/waitlist"
+                href={process.env.NEXT_PUBLIC_KOFI_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block mt-2 text-xs underline"
                 style={{ color: 'var(--quill-green)' }}
               >
-                Join the Pro waitlist for unlimited imports →
+                Help keep OpenQuill free — support on Ko-fi →
               </a>
             )}
           </div>
@@ -662,10 +664,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
 
         {remainingParses !== null && remainingParses <= 2 && remainingParses > 0 && !error && (
           <p className="text-xs" style={{ color: 'var(--quill-amber)' }}>
-            {remainingParses} free import{remainingParses !== 1 ? 's' : ''} left this hour.{' '}
-            <a href="/waitlist" className="underline" style={{ color: 'var(--quill-amber)' }}>
-              Join the waitlist for unlimited →
-            </a>
+            {remainingParses} import{remainingParses !== 1 ? 's' : ''} left this hour. Resets automatically.
           </p>
         )}
 

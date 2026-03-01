@@ -1,19 +1,10 @@
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const GITHUB_URL = 'https://github.com/Jamflynt/openquill'
 const kofiUrl = process.env.NEXT_PUBLIC_KOFI_URL
 
 export default async function HomePage() {
-  let waitlistCount = 0
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase.rpc('get_waitlist_count')
-    waitlistCount = Number(data ?? 0)
-  } catch {
-    // fail silently — landing page still works without count
-  }
 
   return (
     <main className="min-h-screen flex flex-col relative" style={{ background: 'var(--quill-cream)' }}>
@@ -325,12 +316,20 @@ export default async function HomePage() {
         <p className="text-xs mt-3" style={{ color: 'var(--quill-muted)' }}>
           No account yet? That&apos;s fine — entering your email creates one.
         </p>
-        <p className="text-xs mt-4" style={{ color: 'var(--quill-muted)' }}>
-          {waitlistCount >= 50 ? `${waitlistCount} people on the Pro waitlist — ` : 'Pro tier coming soon — '}
-          <Link href="/waitlist" className="underline" style={{ color: 'var(--quill-green)' }}>
-            join the waitlist →
-          </Link>
-        </p>
+        {kofiUrl && (
+          <p className="text-xs mt-4" style={{ color: 'var(--quill-muted)' }}>
+            Built and maintained by one person.{' '}
+            <a
+              href={kofiUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+              style={{ color: 'var(--quill-green)' }}
+            >
+              Help keep it free →
+            </a>
+          </p>
+        )}
       </div>
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
