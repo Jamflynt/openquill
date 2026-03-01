@@ -25,7 +25,7 @@ export default async function HomePage() {
         {/* ── Wordmark ───────────────────────────────────────────────────── */}
         <div className="mb-8 text-center">
           <h1
-            className="quill-wordmark text-6xl"
+            className="quill-wordmark text-4xl sm:text-6xl"
             style={{ color: 'var(--quill-green)' }}
           >
             OPENQUILL
