@@ -158,7 +158,7 @@ export default function AppShell({ children, user }: AppShellProps) {
               key={link.href}
               href={link.href}
               aria-current={active ? 'page' : undefined}
-              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]"
+              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px] active:opacity-50 transition-opacity duration-100"
               style={{ color: active ? 'var(--quill-green)' : 'var(--quill-muted)' }}
             >
               {link.icon && <link.icon size={18} aria-hidden={true} />}
