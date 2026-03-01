@@ -1,0 +1,62 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js
+.next/
+/out/
+/build
+
+# Legacy project directory
+quill/
+
+# Testing
+/coverage
+/e2e/.auth/
+/test-results/
+/playwright-report/
+
+# Environment files
+.env*
+!.env.local.example
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Misc
+*.bak
+*.pem
+
+# Vercel
+.vercel
+
+# Internal development files (not part of the app)
+.claude/
+NOTES.md
+team/
+ledger/
+ledger-ui-ux-review-2026-02-23.md

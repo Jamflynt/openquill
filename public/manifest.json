@@ -1,0 +1,18 @@
+{
+  "name": "OpenQuill — Personal Finance",
+  "short_name": "OpenQuill",
+  "description": "Paste your bank statement. No Plaid. No passwords.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#1C4A2E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-bricolage);
+  --font-mono: var(--font-plex-mono);
+  --font-display: var(--font-playfair);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* OpenQuill custom colors */
+  --color-quill-green: var(--quill-green);
+  --color-quill-green-light: var(--quill-green-light);
+  --color-quill-red: var(--quill-red);
+  --color-quill-amber: var(--quill-amber);
+  --color-quill-cream: var(--quill-cream);
+  --color-quill-parchment: var(--quill-parchment);
+  --color-quill-card: var(--quill-card);
+  --color-quill-surface: var(--quill-surface);
+  --color-quill-rule: var(--quill-rule);
+  --color-quill-muted: var(--quill-muted);
+  --color-quill-ink: var(--quill-ink);
+}
+
+:root {
+  --radius: 0.375rem;
+  /* Vintage parchment base */
+  --background: #FAF7F2;
+  --foreground: #1A1A18;
+  --card: #F5F0E8;
+  --card-foreground: #1A1A18;
+  --popover: #F5F0E8;
+  --popover-foreground: #1A1A18;
+  --primary: #1C4A2E;
+  --primary-foreground: #FAF7F2;
+  --secondary: #F0EBE1;
+  --secondary-foreground: #1A1A18;
+  --muted: #EDE8DF;
+  --muted-foreground: #6B6355;
+  --accent: #E8E2D8;
+  --accent-foreground: #1C4A2E;
+  --destructive: #B84040;
+  --border: #D4C9B8;
+  --input: #E8E2D8;
+  --ring: #1C4A2E;
+
+  /* Chart colors — earthy, warm */
+  --chart-1: #1C4A2E;
+  --chart-2: #8B6914;
+  --chart-3: #B84040;
+  --chart-4: #4A6E5A;
+  --chart-5: #6B4F30;
+
+  /* Sidebar */
+  --sidebar: #F0EBE1;
+  --sidebar-foreground: #1A1A18;
+  --sidebar-primary: #1C4A2E;
+  --sidebar-primary-foreground: #FAF7F2;
+  --sidebar-accent: #E8E2D8;
+  --sidebar-accent-foreground: #1C4A2E;
+  --sidebar-border: #D4C9B8;
+  --sidebar-ring: #1C4A2E;
+
+  /* OpenQuill custom tokens */
+  --quill-green: #1C4A2E;
+  --quill-green-light: #2D6E47;
+  --quill-red: #B84040;
+  --quill-amber: #8B6914;
+  --quill-cream: #FAF7F2;
+  --quill-parchment: #F0EBE1;
+  --quill-card: #F5F0E8;
+  --quill-surface: #EDE8DF;
+  --quill-rule: #D4C9B8;
+  --quill-muted: #5A5244;
+  --quill-ink: #1A1A18;
+  --quill-green-bg: #E8F5EE;
+  --quill-amber-bg: #FEF9EC;
+  --quill-red-bg: #FDE8E8;
+}
+
+/* ─── Dark mode token overrides ─────────────────────────────────────────── */
+/* Applied when <html class="dark"> — set by next-themes based on OS or      */
+/* manual toggle. --quill-cream flips to dark; --quill-ink flips to light. */
+/* --quill-green lightens to #3D9960 so dark cream text passes WCAG AA.     */
+.dark {
+  --background: #1A1A18;
+  --foreground: #F0EBE1;
+  --card: #242420;
+  --card-foreground: #F0EBE1;
+  --popover: #242420;
+  --popover-foreground: #F0EBE1;
+  --primary: #3D9960;
+  --primary-foreground: #1A1A18;
+  --secondary: #2A2A26;
+  --secondary-foreground: #F0EBE1;
+  --muted: #2A2A26;
+  --muted-foreground: #9A9080;
+  --accent: #2A2A26;
+  --accent-foreground: #F0EBE1;
+  --destructive: #CC5555;
+  --border: #383832;
+  --input: #2A2A26;
+  --ring: #3D9960;
+
+  /* OpenQuill custom tokens */
+  --quill-green: #3D9960;
+  --quill-green-light: #4CAF72;
+  --quill-red: #CC5555;
+  --quill-amber: #C49A28;
+  --quill-cream: #1A1A18;
+  --quill-parchment: #1E1E1C;
+  --quill-card: #242420;
+  --quill-surface: #2E2E2A;
+  --quill-rule: #383832;
+  --quill-muted: #A89E8E;
+  --quill-ink: #F0EBE1;
+  --quill-green-bg: #0A2015;
+  --quill-amber-bg: #201A00;
+  --quill-red-bg: #200D0D;
+
+  /* Sidebar */
+  --sidebar: #1E1E1C;
+  --sidebar-foreground: #F0EBE1;
+  --sidebar-primary: #3D9960;
+  --sidebar-primary-foreground: #1A1A18;
+  --sidebar-accent: #2A2A26;
+  --sidebar-accent-foreground: #F0EBE1;
+  --sidebar-border: #383832;
+  --sidebar-ring: #3D9960;
+
+  /* Charts */
+  --chart-1: #3D9960;
+  --chart-2: #C49A28;
+  --chart-3: #CC5555;
+  --chart-4: #5A8A70;
+  --chart-5: #9A6A40;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Monospace numbers — always use tabular figures */
+.num {
+  font-family: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Display serif — for hero numbers and the wordmark */
+.font-display {
+  font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
+}
+
+/* Wordmark — OPENQUILL with the ruled underline */
+.quill-wordmark {
+  position: relative;
+  padding-bottom: 5px;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+}
+@keyframes quillLineIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.quill-wordmark::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+  transform-origin: left center;
+  transform: scaleX(1);
+  animation: quillLineIn 0.4s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .quill-wordmark::after {
+    animation: none;
+  }
+}
+
+/* Amount colors */
+.amount-positive { color: var(--quill-green); }
+.amount-negative { color: var(--quill-red); }
+.amount-neutral  { color: var(--quill-muted); }
+
+/* OpenQuill ruling */
+.quill-row {
+  border-bottom: 1px solid var(--quill-rule);
+}
+
+/* Custom checkboxes — prevent iOS Safari blue, apply forest green */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border: 1.5px solid var(--quill-rule);
+  border-radius: 2px;
+  background: var(--quill-cream);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"]:checked {
+  background: var(--quill-green);
+  border-color: var(--quill-green);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #FAF7F2;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--quill-green);
+  outline-offset: 2px;
+}
+
+/* Card hover lift */
+.quill-card-lift {
+  transition: box-shadow 0.2s ease;
+}
+.quill-card-lift:hover {
+  box-shadow: 0 2px 8px rgba(28, 74, 46, 0.06);
+}
+
+/* Desktop nav link hover underline — slides in from left */
+.quill-nav-link {
+  position: relative;
+}
+.quill-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--quill-green);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.2s ease;
+  opacity: 0.5;
+}
+.quill-nav-link:hover::after {
+  transform: scaleX(1);
+}
+/* Don't show underline on active nav items (they have background) */
+.quill-nav-link[aria-current="page"]::after {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .quill-nav-link::after {
+    transition: none;
+  }
+}
+
+/* Toast: top-center on mobile, bottom-right on desktop (default) */
+@media (max-width: 767px) {
+  [data-sonner-toaster][data-position] {
+    top: 16px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* Paper texture overlay — SVG fractal noise at 2.5% opacity */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  opacity: 0.025;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--quill-parchment); }
+::-webkit-scrollbar-thumb { background: var(--quill-rule); border-radius: 3px; }
