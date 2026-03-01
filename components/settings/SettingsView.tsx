@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { User } from '@/types/database'
@@ -21,14 +21,6 @@ export default function SettingsView({ profile }: SettingsViewProps) {
   const [saving, setSaving] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [waitlistCount, setWaitlistCount] = useState<number | null>(null)
-
-  useEffect(() => {
-    fetch('/api/waitlist')
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => { if (data?.count != null) setWaitlistCount(data.count) })
-      .catch(() => {})
-  }, [])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -203,7 +195,7 @@ export default function SettingsView({ profile }: SettingsViewProps) {
           </div>
         </section>
 
-        {/* Account tier */}
+        {/* Account */}
         <section>
           <h2
             className="text-xs font-medium tracking-widest uppercase mb-4"
@@ -211,37 +203,21 @@ export default function SettingsView({ profile }: SettingsViewProps) {
           >
             Account
           </h2>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm" style={{ color: 'var(--quill-ink)' }}>
-                {profile.subscription_tier === 'pro' ? 'Pro' : 'Free tier'}
-              </p>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--quill-muted)' }}>
-                {profile.subscription_tier === 'pro'
-                  ? 'Unlimited statement imports per hour.'
-                  : '5 statement imports per hour.'}
-              </p>
-              {profile.subscription_tier !== 'pro' && (
-                <>
-                  <p className="text-xs mt-1" style={{ color: 'var(--quill-muted)' }}>
-                    Dashboard, debt tracker, goals, and calculator are always free.
-                  </p>
-                  <p className="text-xs mt-1.5" style={{ color: 'var(--quill-muted)' }}>
-                    Pro tier coming soon — unlimited imports, AI insights, and CSV export.{' '}
-                    <a href="/waitlist" className="underline" style={{ color: 'var(--quill-green)' }}>
-                      {waitlistCount !== null && waitlistCount >= 50
-                        ? `Join ${waitlistCount} others on the waitlist →`
-                        : 'Be among the first — join the waitlist →'}
-                    </a>
-                  </p>
-                </>
-              )}
-            </div>
+          <div>
+            <p className="text-sm" style={{ color: 'var(--quill-ink)' }}>
+              Free — all features included
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--quill-muted)' }}>
+              5 statement imports per hour (fair-use limit).
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--quill-muted)' }}>
+              Dashboard, debt tracker, goals, calculator, and transaction history — always free and unlimited.
+            </p>
           </div>
         </section>
 
         {/* Support OpenQuill */}
-        {process.env.NEXT_PUBLIC_KOFI_URL && profile.subscription_tier !== 'pro' && (
+        {process.env.NEXT_PUBLIC_KOFI_URL && (
           <section>
             <h2
               className="text-xs font-medium tracking-widest uppercase mb-4"
@@ -250,7 +226,7 @@ export default function SettingsView({ profile }: SettingsViewProps) {
               Support OpenQuill
             </h2>
             <p className="text-xs mb-3" style={{ color: 'var(--quill-muted)' }}>
-              I build OpenQuill solo, on nights and weekends. If it&apos;s helped you understand your finances, a Ko-fi keeps the project going.
+              I build OpenQuill solo. Every statement import runs an AI call that costs real money. If it&apos;s been useful, a Ko-fi helps keep it free for everyone.
             </p>
             <a
               href={process.env.NEXT_PUBLIC_KOFI_URL}

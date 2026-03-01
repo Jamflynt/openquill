@@ -99,8 +99,7 @@ export async function POST(request: NextRequest) {
   if (!allowed) {
     return NextResponse.json(
       {
-        error: `You've used all ${FREE_TIER_LIMIT} free imports this hour. Pro (coming soon) removes this limit.`,
-        upgradeUrl: '/waitlist',
+        error: `You've reached the import limit (${FREE_TIER_LIMIT} per hour). Each import uses AI that costs real money — this limit helps keep OpenQuill free for everyone. Try again in about an hour.`,
       },
       { status: 429 }
     )

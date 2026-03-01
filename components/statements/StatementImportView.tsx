@@ -114,7 +114,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
     if (!res.ok) {
       if (res.status === 429) {
         const resetAt = new Date(Date.now() + 60 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        setError(`5 free imports per hour — rate limit reached. Resets around ${resetAt}. Join the Pro waitlist for unlimited imports.`)
+        setError(`5 imports per hour — limit reached. Each import uses AI that costs real money, so this limit keeps OpenQuill free for everyone. Resets around ${resetAt}.`)
       } else {
         setError(data.error ?? "Couldn't extract transactions. Make sure you pasted the full statement text (not a screenshot) from your bank's website or a PDF. Then try again.")
       }
@@ -144,6 +144,21 @@ export default function StatementImportView({ accounts: initialAccounts }: State
     setTransactions((prev) =>
       prev.map((t, i) => (i === index ? { ...t, [field]: value } : t))
     )
+  }
+
+  function removeTransaction(index: number) {
+    setTransactions((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const EMPTY_TX: ParsedTransaction = { date: '', description: '', amount: 0, suggestedCategory: 'Other', isIncome: false, isTransfer: false }
+  const [adding, setAdding] = useState(false)
+  const [newTx, setNewTx] = useState<ParsedTransaction>({ ...EMPTY_TX })
+
+  function addTransaction() {
+    if (!newTx.date || !newTx.description) return
+    setTransactions((prev) => [...prev, newTx])
+    setNewTx({ ...EMPTY_TX })
+    setAdding(false)
   }
 
   async function handleCommit() {
@@ -283,7 +298,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
         {process.env.NEXT_PUBLIC_KOFI_URL && (
           <p className="text-xs mt-4" style={{ color: 'var(--quill-muted)' }}>
             OpenQuill organized {commitCount} transaction{commitCount !== 1 ? 's' : ''}.{' '}
-            If it&apos;s been useful,{' '}
+            That import used an AI call that costs real money to process.{' '}
             <a
               href={process.env.NEXT_PUBLIC_KOFI_URL}
               target="_blank"
@@ -291,7 +306,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               className="underline"
               style={{ color: 'var(--quill-green)' }}
             >
-              support development on Ko-fi →
+              Help keep OpenQuill free →
             </a>
           </p>
         )}
@@ -394,17 +409,44 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                 className="px-4 py-3 space-y-2"
                 style={{ background: 'var(--quill-card)' }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-xs font-mono" style={{ color: 'var(--quill-muted)' }}>{t.date}</p>
-                    <p className="text-sm" style={{ color: 'var(--quill-ink)' }}>{t.description}</p>
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 space-y-1">
+                    <input
+                      type="date"
+                      value={t.date}
+                      onChange={(e) => updateTransaction(i, 'date', e.target.value)}
+                      aria-label={`Date for ${t.description}`}
+                      className="text-xs font-mono border rounded-sm px-2 py-1"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
+                    />
+                    <input
+                      type="text"
+                      value={t.description}
+                      onChange={(e) => updateTransaction(i, 'description', e.target.value)}
+                      aria-label="Description"
+                      className="w-full text-sm border rounded-sm px-2 py-1"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                    />
                   </div>
-                  <p
-                    className="font-mono font-medium text-sm ml-3 shrink-0"
-                    style={{ color: t.amount < 0 ? 'var(--quill-red)' : 'var(--quill-green)' }}
-                  >
-                    {formatCurrency(t.amount)}
-                  </p>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={t.amount}
+                      onChange={(e) => updateTransaction(i, 'amount', parseFloat(e.target.value) || 0)}
+                      aria-label={`Amount for ${t.description}`}
+                      className="w-24 text-sm font-mono text-right border rounded-sm px-2 py-1"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: t.amount < 0 ? 'var(--quill-red)' : 'var(--quill-green)' }}
+                    />
+                    <button
+                      onClick={() => removeTransaction(i)}
+                      aria-label={`Remove "${t.description}"`}
+                      className="text-xs px-1.5 py-0.5 rounded-sm transition-opacity hover:opacity-70"
+                      style={{ color: 'var(--quill-red)' }}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <select
@@ -431,6 +473,78 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               </div>
             ))}
           </div>
+          {adding && (
+            <div className="px-4 py-3 space-y-2" style={{ background: 'var(--quill-surface)', borderTop: '1px solid var(--quill-rule)' }}>
+              <div className="space-y-1">
+                <input
+                  type="date"
+                  value={newTx.date}
+                  onChange={(e) => setNewTx((p) => ({ ...p, date: e.target.value }))}
+                  aria-label="New transaction date"
+                  className="text-xs font-mono border rounded-sm px-2 py-1"
+                  style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
+                />
+                <input
+                  type="text"
+                  value={newTx.description}
+                  onChange={(e) => setNewTx((p) => ({ ...p, description: e.target.value }))}
+                  placeholder="Description"
+                  aria-label="New transaction description"
+                  className="w-full text-sm border rounded-sm px-2 py-1"
+                  style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                />
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newTx.amount || ''}
+                  onChange={(e) => setNewTx((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))}
+                  placeholder="Amount (negative for spending)"
+                  aria-label="New transaction amount"
+                  className="w-full text-sm font-mono border rounded-sm px-2 py-1"
+                  style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                />
+              </div>
+              <div className="flex gap-2 items-center">
+                <select
+                  value={newTx.suggestedCategory}
+                  onChange={(e) => setNewTx((p) => ({ ...p, suggestedCategory: e.target.value as ParsedTransaction['suggestedCategory'] }))}
+                  aria-label="New transaction category"
+                  className="flex-1 text-xs border rounded-sm px-2 py-1.5"
+                  style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                >
+                  {TRANSACTION_CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-1 text-xs" style={{ color: 'var(--quill-muted)' }}>
+                  <input
+                    type="checkbox"
+                    checked={newTx.isIncome}
+                    onChange={(e) => setNewTx((p) => ({ ...p, isIncome: e.target.checked }))}
+                    aria-label="Mark as income"
+                  />
+                  Income
+                </label>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={addTransaction}
+                  disabled={!newTx.date || !newTx.description}
+                  className="text-xs px-3 py-1.5 rounded-sm font-medium disabled:opacity-50"
+                  style={{ background: 'var(--quill-green)', color: 'var(--quill-cream)' }}
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => { setAdding(false); setNewTx({ ...EMPTY_TX }) }}
+                  className="text-xs px-3 py-1.5 rounded-sm"
+                  style={{ color: 'var(--quill-muted)' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Desktop semantic table */}
@@ -438,11 +552,12 @@ export default function StatementImportView({ accounts: initialAccounts }: State
           <table className="w-full" style={{ borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: 'var(--quill-surface)', borderBottom: '1px solid var(--quill-rule)' }}>
-                <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-left w-24" style={{ color: 'var(--quill-muted)' }}>Date</th>
+                <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-left w-32" style={{ color: 'var(--quill-muted)' }}>Date</th>
                 <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-left" style={{ color: 'var(--quill-muted)' }}>Description</th>
-                <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-right w-24" style={{ color: 'var(--quill-muted)' }}>Amount</th>
+                <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-right w-28" style={{ color: 'var(--quill-muted)' }}>Amount</th>
                 <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-left w-36" style={{ color: 'var(--quill-muted)' }}>Category</th>
                 <th scope="col" className="text-xs font-medium tracking-wide uppercase px-4 py-2.5 text-center w-16" style={{ color: 'var(--quill-muted)' }}>Income</th>
+                <th scope="col" className="w-10"><span className="sr-only">Remove</span></th>
               </tr>
             </thead>
             <tbody>
@@ -454,12 +569,38 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                     borderBottom: i < transactions.length - 1 ? '1px solid var(--quill-rule)' : undefined,
                   }}
                 >
-                  <td className="px-4 py-3 text-xs font-mono" style={{ color: 'var(--quill-muted)' }}>{t.date}</td>
-                  <td className="px-4 py-3 text-sm" style={{ color: 'var(--quill-ink)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</td>
-                  <td className="px-4 py-3 text-sm font-mono text-right" style={{ color: t.amount < 0 ? 'var(--quill-red)' : 'var(--quill-green)' }}>
-                    {formatCurrency(t.amount)}
+                  <td className="px-4 py-2">
+                    <input
+                      type="date"
+                      value={t.date}
+                      onChange={(e) => updateTransaction(i, 'date', e.target.value)}
+                      aria-label={`Date for ${t.description}`}
+                      className="text-xs font-mono border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
+                    />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-2">
+                    <input
+                      type="text"
+                      value={t.description}
+                      onChange={(e) => updateTransaction(i, 'description', e.target.value)}
+                      aria-label="Description"
+                      className="text-sm border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={t.amount}
+                      onChange={(e) => updateTransaction(i, 'amount', parseFloat(e.target.value) || 0)}
+                      aria-label={`Amount for ${t.description}`}
+                      className="text-sm font-mono text-right border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: t.amount < 0 ? 'var(--quill-red)' : 'var(--quill-green)' }}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
                     <select
                       value={t.suggestedCategory}
                       onChange={(e) => updateTransaction(i, 'suggestedCategory', e.target.value)}
@@ -472,7 +613,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-2 text-center">
                     <input
                       type="checkbox"
                       checked={t.isIncome}
@@ -480,21 +621,117 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                       aria-label={`Mark "${t.description}" as income`}
                     />
                   </td>
+                  <td className="px-2 py-2 text-center">
+                    <button
+                      onClick={() => removeTransaction(i)}
+                      aria-label={`Remove "${t.description}"`}
+                      className="text-xs px-1 py-0.5 rounded-sm transition-opacity hover:opacity-70"
+                      style={{ color: 'var(--quill-red)' }}
+                    >
+                      ×
+                    </button>
+                  </td>
                 </tr>
               ))}
+              {adding && (
+                <tr style={{ background: 'var(--quill-surface)', borderTop: '1px solid var(--quill-rule)' }}>
+                  <td className="px-4 py-2">
+                    <input
+                      type="date"
+                      value={newTx.date}
+                      onChange={(e) => setNewTx((p) => ({ ...p, date: e.target.value }))}
+                      aria-label="New transaction date"
+                      className="text-xs font-mono border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
+                    <input
+                      type="text"
+                      value={newTx.description}
+                      onChange={(e) => setNewTx((p) => ({ ...p, description: e.target.value }))}
+                      placeholder="Description"
+                      aria-label="New transaction description"
+                      className="text-sm border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newTx.amount || ''}
+                      onChange={(e) => setNewTx((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))}
+                      placeholder="0.00"
+                      aria-label="New transaction amount"
+                      className="text-sm font-mono text-right border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                    />
+                  </td>
+                  <td className="px-4 py-2">
+                    <select
+                      value={newTx.suggestedCategory}
+                      onChange={(e) => setNewTx((p) => ({ ...p, suggestedCategory: e.target.value as ParsedTransaction['suggestedCategory'] }))}
+                      aria-label="New transaction category"
+                      className="text-xs border rounded-sm px-1.5 py-1 w-full"
+                      style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
+                    >
+                      {TRANSACTION_CATEGORIES.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={newTx.isIncome}
+                      onChange={(e) => setNewTx((p) => ({ ...p, isIncome: e.target.checked }))}
+                      aria-label="Mark as income"
+                    />
+                  </td>
+                  <td className="px-2 py-2 text-center">
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={addTransaction}
+                        disabled={!newTx.date || !newTx.description}
+                        className="text-xs font-medium disabled:opacity-50"
+                        style={{ color: 'var(--quill-green)' }}
+                      >
+                        ✓
+                      </button>
+                      <button
+                        onClick={() => { setAdding(false); setNewTx({ ...EMPTY_TX }) }}
+                        className="text-xs"
+                        style={{ color: 'var(--quill-muted)' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <button
             onClick={handleCommit}
-            disabled={committing}
-            className="flex-1 sm:flex-none px-6 py-3 text-sm font-medium rounded-sm"
+            disabled={committing || transactions.length === 0}
+            className="flex-1 sm:flex-none px-6 py-3 text-sm font-medium rounded-sm disabled:opacity-50"
             style={{ background: 'var(--quill-green)', color: 'var(--quill-cream)' }}
           >
-            {committing ? 'Saving...' : `Confirm & save ${transactions.length} transactions →`}
+            {committing ? 'Saving...' : `Confirm & save ${transactions.length} transaction${transactions.length !== 1 ? 's' : ''} →`}
           </button>
+          {!adding && (
+            <button
+              onClick={() => setAdding(true)}
+              className="text-xs px-3 py-2 border rounded-sm transition-opacity hover:opacity-80"
+              style={{ borderColor: 'var(--quill-rule)', color: 'var(--quill-green)' }}
+            >
+              + Add a transaction
+            </button>
+          )}
         </div>
       </div>
     )
@@ -648,13 +885,15 @@ export default function StatementImportView({ accounts: initialAccounts }: State
             <p role="alert" className="text-sm" style={{ color: 'var(--quill-red)' }}>
               {error}
             </p>
-            {error.includes('free imports per hour') && (
+            {error.includes('imports per hour') && process.env.NEXT_PUBLIC_KOFI_URL && (
               <a
-                href="/waitlist"
+                href={process.env.NEXT_PUBLIC_KOFI_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block mt-2 text-xs underline"
                 style={{ color: 'var(--quill-green)' }}
               >
-                Join the Pro waitlist for unlimited imports →
+                Help keep OpenQuill free — support on Ko-fi →
               </a>
             )}
           </div>
@@ -662,10 +901,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
 
         {remainingParses !== null && remainingParses <= 2 && remainingParses > 0 && !error && (
           <p className="text-xs" style={{ color: 'var(--quill-amber)' }}>
-            {remainingParses} free import{remainingParses !== 1 ? 's' : ''} left this hour.{' '}
-            <a href="/waitlist" className="underline" style={{ color: 'var(--quill-amber)' }}>
-              Join the waitlist for unlimited →
-            </a>
+            {remainingParses} import{remainingParses !== 1 ? 's' : ''} left this hour. Resets automatically.
           </p>
         )}
 
