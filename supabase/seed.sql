@@ -51,7 +51,7 @@ INSERT INTO public.accounts (id, user_id, name, type, institution, balance, apr,
 -- =============================================================
 INSERT INTO public.debts (user_id, name, balance, apr, min_payment, due_date, pay_in_full, ends_in_months, is_active, updated_at) VALUES
   (v_user_id, 'USAA Amex Card', 1596.28, 18.4, 16.00, '03/16', true, null, true, now()),
-  (v_user_id, 'Affirm (x2)',    920.00,  18.0, 100.00, null,   false, 11, true, now()),
+  (v_user_id, 'Buy Now Pay Later (x2)', 920.00, 18.0, 100.00, null, false, 11, true, now()),
   (v_user_id, 'Klarna',         176.24,  0.0,  88.00,  null,   false, 2, true, now()),
   (v_user_id, 'Apple Card',     178.10,  0.0,  15.00,  null,   true, null, true, now()),
   (v_user_id, 'iPhone Installment (AT&T)', 775.05, 0.0, 52.50, null, false, 18, true, now());
@@ -64,7 +64,7 @@ INSERT INTO public.fixed_obligations (user_id, name, amount, variable, notes) VA
   (v_user_id, 'Car Payment', 675.00, false, 'Due around 15th'),
   (v_user_id, 'Internet (altafiber)', 77.21, false, null),
   (v_user_id, 'USAA Auto + Renters Insurance', 150.00, false, null),
-  (v_user_id, 'Affirm',         100.00,  false, 'Ends ~Month 11'),
+  (v_user_id, 'BNPL Payment',   100.00,  false, 'Ends ~Month 11'),
   (v_user_id, 'Klarna',          88.00,  false, 'Ends April — 2 months remaining'),
   (v_user_id, 'iPhone Installment', 52.50, false, '~18 months remaining'),
   (v_user_id, 'Electric (Duke Energy)', 200.00, true, 'Winter: $477-677 / Spring-Fall: ~$170');
@@ -117,7 +117,7 @@ INSERT INTO public.transactions (user_id, account_id, date, description, amount,
   (v_user_id, v_usaa_checking, '2026-02-06', 'APPLE.COM/BILL', -14.99, 'Subscriptions', false, false),
 
   -- Debt Payments
-  (v_user_id, v_usaa_checking, '2026-02-05', 'AFFIRM PAYMENT', -100.00, 'Debt Payments', false, false),
+  (v_user_id, v_usaa_checking, '2026-02-05', 'BNPL PAYMENT', -100.00, 'Debt Payments', false, false),
   (v_user_id, v_usaa_checking, '2026-02-05', 'KLARNA PAYMENT', -88.00, 'Debt Payments', false, false),
 
   -- Shopping
