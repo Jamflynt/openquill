@@ -690,18 +690,22 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                     />
                   </td>
                   <td className="px-2 py-2 text-center">
-                    <div className="flex flex-col gap-1">
+                    <div className="flex gap-2 justify-center">
                       <button
+                        type="button"
                         onClick={addTransaction}
                         disabled={!newTx.date || !newTx.description}
-                        className="text-xs font-medium disabled:opacity-50"
+                        aria-label="Save new transaction"
+                        className="text-sm font-medium px-2 py-1 rounded-sm disabled:opacity-30 transition-opacity hover:opacity-70"
                         style={{ color: 'var(--quill-green)' }}
                       >
-                        ✓
+                        Save
                       </button>
                       <button
+                        type="button"
                         onClick={() => { setAdding(false); setNewTx({ ...EMPTY_TX }) }}
-                        className="text-xs"
+                        aria-label="Cancel adding transaction"
+                        className="text-sm px-2 py-1 rounded-sm transition-opacity hover:opacity-70"
                         style={{ color: 'var(--quill-muted)' }}
                       >
                         ×
@@ -726,7 +730,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
           {!adding && (
             <button
               onClick={() => setAdding(true)}
-              className="text-xs px-3 py-2 border rounded-sm transition-opacity hover:opacity-80"
+              className="text-sm px-6 py-3 border rounded-sm font-medium transition-opacity hover:opacity-80"
               style={{ borderColor: 'var(--quill-rule)', color: 'var(--quill-green)' }}
             >
               + Add a transaction
