@@ -150,14 +150,28 @@ export default function StatementImportView({ accounts: initialAccounts }: State
     setTransactions((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const EMPTY_TX: ParsedTransaction = { date: '', description: '', amount: 0, suggestedCategory: 'Other', isIncome: false, isTransfer: false }
   const [adding, setAdding] = useState(false)
-  const [newTx, setNewTx] = useState<ParsedTransaction>({ ...EMPTY_TX })
+  const [newDate, setNewDate] = useState('')
+  const [newDesc, setNewDesc] = useState('')
+  const [newAmount, setNewAmount] = useState(0)
+  const [newCategory, setNewCategory] = useState<string>('Other')
+  const [newIsIncome, setNewIsIncome] = useState(false)
 
   function addTransaction() {
-    if (!newTx.date || !newTx.description) return
-    setTransactions((prev) => [...prev, newTx])
-    setNewTx({ ...EMPTY_TX })
+    if (!newDate || !newDesc) return
+    setTransactions((prev) => [...prev, {
+      date: newDate,
+      description: newDesc,
+      amount: newAmount,
+      suggestedCategory: newCategory,
+      isIncome: newIsIncome,
+      isTransfer: false,
+    } as ParsedTransaction])
+    setNewDate('')
+    setNewDesc('')
+    setNewAmount(0)
+    setNewCategory('Other')
+    setNewIsIncome(false)
     setAdding(false)
   }
 
@@ -478,16 +492,16 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               <div className="space-y-1">
                 <input
                   type="date"
-                  value={newTx.date}
-                  onChange={(e) => setNewTx((p) => ({ ...p, date: e.target.value }))}
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
                   aria-label="New transaction date"
                   className="text-xs font-mono border rounded-sm px-2 py-1"
                   style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
                 />
                 <input
                   type="text"
-                  value={newTx.description}
-                  onChange={(e) => setNewTx((p) => ({ ...p, description: e.target.value }))}
+                  value={newDesc}
+                  onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Description"
                   aria-label="New transaction description"
                   className="w-full text-sm border rounded-sm px-2 py-1"
@@ -496,8 +510,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                 <input
                   type="number"
                   step="0.01"
-                  value={newTx.amount || ''}
-                  onChange={(e) => setNewTx((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))}
+                  value={newAmount || ''}
+                  onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
                   placeholder="Amount (negative for spending)"
                   aria-label="New transaction amount"
                   className="w-full text-sm font-mono border rounded-sm px-2 py-1"
@@ -506,8 +520,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               </div>
               <div className="flex gap-2 items-center">
                 <select
-                  value={newTx.suggestedCategory}
-                  onChange={(e) => setNewTx((p) => ({ ...p, suggestedCategory: e.target.value as ParsedTransaction['suggestedCategory'] }))}
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
                   aria-label="New transaction category"
                   className="flex-1 text-xs border rounded-sm px-2 py-1.5"
                   style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
@@ -519,8 +533,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                 <label className="flex items-center gap-1 text-xs" style={{ color: 'var(--quill-muted)' }}>
                   <input
                     type="checkbox"
-                    checked={newTx.isIncome}
-                    onChange={(e) => setNewTx((p) => ({ ...p, isIncome: e.target.checked }))}
+                    checked={newIsIncome}
+                    onChange={(e) => setNewIsIncome(e.target.checked)}
                     aria-label="Mark as income"
                   />
                   Income
@@ -528,15 +542,17 @@ export default function StatementImportView({ accounts: initialAccounts }: State
               </div>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={addTransaction}
-                  disabled={!newTx.date || !newTx.description}
+                  disabled={!newDate || !newDesc}
                   className="text-xs px-3 py-1.5 rounded-sm font-medium disabled:opacity-50"
                   style={{ background: 'var(--quill-green)', color: 'var(--quill-cream)' }}
                 >
                   Add
                 </button>
                 <button
-                  onClick={() => { setAdding(false); setNewTx({ ...EMPTY_TX }) }}
+                  type="button"
+                  onClick={() => { setAdding(false); setNewDate(''); setNewDesc(''); setNewAmount(0); setNewCategory('Other'); setNewIsIncome(false) }}
                   className="text-xs px-3 py-1.5 rounded-sm"
                   style={{ color: 'var(--quill-muted)' }}
                 >
@@ -638,8 +654,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                   <td className="px-4 py-2">
                     <input
                       type="date"
-                      value={newTx.date}
-                      onChange={(e) => setNewTx((p) => ({ ...p, date: e.target.value }))}
+                      value={newDate}
+                      onChange={(e) => setNewDate(e.target.value)}
                       aria-label="New transaction date"
                       className="text-xs font-mono border rounded-sm px-1.5 py-1 w-full"
                       style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-muted)' }}
@@ -648,8 +664,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                   <td className="px-4 py-2">
                     <input
                       type="text"
-                      value={newTx.description}
-                      onChange={(e) => setNewTx((p) => ({ ...p, description: e.target.value }))}
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
                       placeholder="Description"
                       aria-label="New transaction description"
                       className="text-sm border rounded-sm px-1.5 py-1 w-full"
@@ -660,8 +676,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                     <input
                       type="number"
                       step="0.01"
-                      value={newTx.amount || ''}
-                      onChange={(e) => setNewTx((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))}
+                      value={newAmount || ''}
+                      onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
                       placeholder="0.00"
                       aria-label="New transaction amount"
                       className="text-sm font-mono text-right border rounded-sm px-1.5 py-1 w-full"
@@ -670,8 +686,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                   </td>
                   <td className="px-4 py-2">
                     <select
-                      value={newTx.suggestedCategory}
-                      onChange={(e) => setNewTx((p) => ({ ...p, suggestedCategory: e.target.value as ParsedTransaction['suggestedCategory'] }))}
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
                       aria-label="New transaction category"
                       className="text-xs border rounded-sm px-1.5 py-1 w-full"
                       style={{ borderColor: 'var(--quill-rule)', background: 'var(--quill-cream)', color: 'var(--quill-ink)' }}
@@ -684,8 +700,8 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                   <td className="px-4 py-2 text-center">
                     <input
                       type="checkbox"
-                      checked={newTx.isIncome}
-                      onChange={(e) => setNewTx((p) => ({ ...p, isIncome: e.target.checked }))}
+                      checked={newIsIncome}
+                      onChange={(e) => setNewIsIncome(e.target.checked)}
                       aria-label="Mark as income"
                     />
                   </td>
@@ -694,7 +710,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                       <button
                         type="button"
                         onClick={addTransaction}
-                        disabled={!newTx.date || !newTx.description}
+                        disabled={!newDate || !newDesc}
                         aria-label="Save new transaction"
                         className="text-sm font-medium px-2 py-1 rounded-sm disabled:opacity-30 transition-opacity hover:opacity-70"
                         style={{ color: 'var(--quill-green)' }}
@@ -703,7 +719,7 @@ export default function StatementImportView({ accounts: initialAccounts }: State
                       </button>
                       <button
                         type="button"
-                        onClick={() => { setAdding(false); setNewTx({ ...EMPTY_TX }) }}
+                        onClick={() => { setAdding(false); setNewDate(''); setNewDesc(''); setNewAmount(0); setNewCategory('Other'); setNewIsIncome(false) }}
                         aria-label="Cancel adding transaction"
                         className="text-sm px-2 py-1 rounded-sm transition-opacity hover:opacity-70"
                         style={{ color: 'var(--quill-muted)' }}
