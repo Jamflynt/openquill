@@ -171,8 +171,7 @@ npm run test:all
 ## Support This Project
 
 OpenQuill is free and open source. If it's useful to you, you can support development on Ko-fi.
-
-Set `NEXT_PUBLIC_KOFI_URL` in your environment to enable the in-app support link.
+https://ko-fi.com/jamieflynt
 
 ---
 
